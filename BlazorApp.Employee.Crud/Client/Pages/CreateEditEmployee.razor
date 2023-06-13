@@ -1,0 +1,82 @@
+﻿@page "/employee"
+@page "/employee/{id:int}"
+@using BlazorApp.Employee.Crud.Shared;
+@inject IEmployeeService EmployeeService
+@inject NavigationManager Navigate
+
+@if (employee is not null)
+{
+    <PageTitle>Edit Employee</PageTitle>
+    <h3>Edit Employee</h3>
+}
+else
+{
+    <PageTitle>Create Employee</PageTitle>
+    <h3>Create Employee</h3>
+}
+<EditForm Model="employee" OnSubmit="HandleSubmit">
+    <div>
+        <label for="name">Name</label>
+        <InputText id="name" @bind-Value="employee.Name" class="form-control" />
+    </div>
+    <div>
+        <label for="nik">NIK</label>
+        <InputNumber id="nik" @bind-Value="employee.NIK" class="form-control" />
+    </div>
+    <div>
+        <label for="status">Status</label>
+        <InputText id="status" @bind-Value="employee.Status" class="form-control" />
+    </div>
+    <div>
+        <label for="address">Address</label>
+        <InputText id="address" @bind-Value="employee.Address" class="form-control" />
+    </div>
+    <div>
+        <label for="email">Email</label>
+        <InputText id="email" @bind-Value="employee.Email" class="form-control" />
+    </div>
+    <div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+        <button type="button" @onclick="Back" class="btn btn-secondary">Back</button>
+    </div>
+</EditForm>
+
+@code {
+    [ParameterAttribute]
+    public int? Id { get; set; }
+
+    Tb_Employee employee = new Tb_Employee();
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (Id is not null)
+        {
+            var result = await EmployeeService.Get((int)Id);
+            if (result is not null)
+            {
+                employee = result;
+            }
+            else
+            {
+                Navigate.NavigateTo("/employee");
+
+            }
+        }
+    }
+    async Task HandleSubmit()
+    {
+        if (Id is null)
+        {
+            await EmployeeService.Create(employee);
+        }
+        else
+        {
+            await EmployeeService.Update((int)Id, employee);
+        }
+        Navigate.NavigateTo("employees");
+    }
+    void Back()
+    {
+        Navigate.NavigateTo("employees");
+    }
+}

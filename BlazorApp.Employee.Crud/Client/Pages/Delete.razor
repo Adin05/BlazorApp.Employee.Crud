@@ -1,0 +1,24 @@
+﻿@page "/delete/{id:int}"
+@inject IEmployeeService EmployeeService
+@inject NavigationManager Navigate
+
+<h3>Delete</h3>
+<p>Are you sure?</p>
+<button type="button" class="btn btn-danger" @onclick="Yes">Yes</button>
+<button type="button" class="btn btn-primary" @onclick="No">No</button>
+
+@code {
+    [ParameterAttribute]
+    public int Id { get; set; }
+
+    async Task Yes()
+    {
+        await EmployeeService.Delete((int)Id);
+        Navigate.NavigateTo("employees");
+    }
+
+    void No()
+    {
+        Navigate.NavigateTo("employees");
+    }
+}
